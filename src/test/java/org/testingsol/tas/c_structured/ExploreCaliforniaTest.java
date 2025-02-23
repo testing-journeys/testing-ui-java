@@ -1,6 +1,6 @@
 package org.testingsol.tas.c_structured;
 
-import io.github.bonigarcia.seljup.SeleniumExtension;
+import io.github.bonigarcia.seljup.SeleniumJupiter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,7 +9,7 @@ import org.testingsol.tas.c_structured.utilities.Pages;
 
 import static org.testingsol.tas.c_structured.utilities.Actions.*;
 
-@ExtendWith(SeleniumExtension.class)
+@ExtendWith(SeleniumJupiter.class)
 public class ExploreCaliforniaTest {
 
     @Test
