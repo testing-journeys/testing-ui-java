@@ -17,6 +17,7 @@
         <junit4.version>4.12</junit4.version>
         <selenium.version>4.25.0</selenium.version>
         <selenium.manager.version>5.9.2</selenium.manager.version>
+        <snakeyml.version>2.3</snakeyml.version>
         <jackson.version>2.18.2</jackson.version>
         <cucumber.version>4.2.6</cucumber.version>
 
@@ -60,6 +61,7 @@
             <version>5.1.1</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
@@ -72,6 +74,12 @@
             <artifactId>jackson-core</artifactId>
             <version>${jackson.version}</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>${snakeyml.version}</version>
         </dependency>
 
         <dependency>

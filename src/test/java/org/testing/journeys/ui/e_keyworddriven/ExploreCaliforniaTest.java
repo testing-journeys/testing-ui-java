@@ -13,7 +13,7 @@ import org.testing.journeys.ui.e_keyworddriven.procedure.Scenario;
 class ExploreCaliforniaTest {
 
     @Test
-    @JsonScenario("ExploreCalifornia.json")
+    @JsonScenario("ExploreCalifornia.yml")
     @ExtendWith(JsonScenarioParameterResolver.class)
     void shouldFillInContactPageForm(Scenario scenario, ChromeDriver driver) {
         scenario.getSteps().forEach(step -> ActionMapper.execute(driver, step));

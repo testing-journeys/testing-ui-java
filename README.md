@@ -1,11 +1,11 @@
-## Examples of approaches for automating test cases
+## Approaches for automating E2E tests (examples for GUI)
 
 ### Capture and replay
 
 In capture/playback approaches, tools are used to capture interactions with the SUT 
 while performing the sequence of actions as defined by a test procedure/scenario.
 
-[Check out this example](src/test/java/org/testingsol/tas/a_captureplay/ExploreCaliforniaTest.side)
+[Check out this example](src/test/java/org/testing/journeys/ui/a_captureplay/ExploreCaliforniaTest.side)
 
 ### Linear scripting
 
@@ -15,7 +15,19 @@ the user through a sequence of steps. This approach  (usually) does not follow a
 abstraction concepts or reuse patterns - that is why this approach is not recommended
 when a large suite of scripts is to be developed (high maintenance cost).
 
-[Check out this example](src/test/java/org/testingsol/tas/b_linear/ExploreCaliforniaTest.java)
+[Check out this example](src/test/java/org/testing/journeys/ui/b_linear/ExploreCaliforniaTest.java)
+```java
+    @Test
+    public void shouldNavigateToContactPage(ChromeDriver driver) {
+
+        driver.get("https://www.explorecalifornia.org/index.htm");
+
+        driver.findElement(By.xpath(".//*[@id='siteNav']/ul/li[5]")).click();
+
+        Assertions.assertEquals("A little about us...", driver.getTitle(),
+                "Navigation: Incorrect page");
+    }
+```
 
 ### Structure scripting
 
@@ -24,7 +36,24 @@ reuse and abstraction. These elements get usually transposed into a script libra
 The library contains reusable scripts that perform sequences of instructions that 
 are commonly required across a number of tests (interaction and data processing related).
 
-[Check out this example](src/test/java/org/testingsol/tas/c_structured/ExploreCaliforniaTest.java)
+[Check out this example](src/test/java/org/testing/journeys/ui/c_structured/ExploreCaliforniaTest.java)
+
+```java
+    @Test
+    public void shouldFillInContactPageForm(ChromeDriver driver) {
+
+        goToPage(driver, Pages.HOME_PAGE_URL);
+        clickOn(driver, Pages.ContactPage.MENU_ITEM);
+        Assertions.assertEquals(Pages.ContactPage.TITLE, driver.getTitle(), "Navigation: Incorrect page");
+
+        type(driver, Pages.ContactPage.NAME_TEXTFIELD, "John Donovan");
+        type(driver, Pages.ContactPage.EMAIL_TEXTFIELD, "John.Donovan@outlook.com");
+        type(driver, Pages.ContactPage.PHONE_TEXTFIELD, "403 233 2332");
+        type(driver, Pages.ContactPage.ADDRESS_TEXTFIELD, "34th Street Ave NE, Seattle");
+        selectByValue(driver, Pages.ContactPage.STATE_DROPDOWN, "WA");
+        type(driver, Pages.ContactPage.ZIPCODE_TEXTFIELD, "98034");
+    }
+```
 
 ### Data-driven testing
 
@@ -36,7 +65,30 @@ This means the main test script (control script) can be reused to implement a nu
 tests (rather than just a single test). The control script contains the sequence of 
 instructions necessary to perform the tests but the input data from a data file.
 
-[Check out this example](src/test/java/org/testingsol/tas/d_datadriven/ExploreCaliforniaTest.java)
+[Check out this example](src/test/java/org/testing/journeys/ui/d_datadriven/ExploreCaliforniaTest.java)
+
+```java
+    @ParameterizedTest(name = "{index}: Sending feedback from {0}")
+    @CsvSource({
+            "John Donovan,  John.Donovan@outlook.com,   403 233 2332,   '34th Street Ave NE, Seattle',  WA, 98034",
+            "Helen Donovan, Helen.Donovan@outlook.com,  403 231 2334,   '32th Street Ave NE, Seattle',  WA, 98033"
+    })
+    public void shouldFillInContactPageForm(String name, String email, String phone,
+                                            String address, String state, String zip,
+                                            ChromeDriver driver) {
+
+        goToPage(driver, Pages.HOME_PAGE_URL);
+        clickOn(driver, Pages.ContactPage.MENU_ITEM);
+        Assertions.assertEquals(Pages.ContactPage.TITLE, driver.getTitle(), "Navigation: Incorrect page");
+
+        type(driver, Pages.ContactPage.NAME_TEXTFIELD, name);
+        type(driver, Pages.ContactPage.EMAIL_TEXTFIELD, email);
+        type(driver, Pages.ContactPage.PHONE_TEXTFIELD, phone);
+        type(driver, Pages.ContactPage.ADDRESS_TEXTFIELD, address);
+        selectByValue(driver, Pages.ContactPage.STATE_DROPDOWN, state);
+        type(driver, Pages.ContactPage.ZIPCODE_TEXTFIELD, zip);
+    }
+```
 
 ### Keyword-driven testing
 
@@ -48,8 +100,43 @@ which could be technical (e.g. click, type) and business in nature (e.g. place o
 - test analyst defined test scripts using _action words_ and _test data_ and serve them to 
 test controller for execution.
 
-[Check out this example - control script](src/test/java/org/testingsol/tas/e_keyworddriven/ExploreCaliforniaTest.java)
-<br>[Check out this example - test script](src/test/resources/ExploreCalifornia.json)
+[Check out this example - control script](src/test/java/org/testing/journeys/ui/e_keyworddriven/ExploreCaliforniaTest.java)
+
+```java
+    @Test
+    @JsonScenario("ExploreCalifornia.yml")
+    @ExtendWith(JsonScenarioParameterResolver.class)
+    void shouldFillInContactPageForm(Scenario scenario, ChromeDriver driver) {
+        scenario.getSteps().forEach(step -> ActionMapper.execute(driver, step));
+    }
+```
+[Check out this example - test script](src/test/resources/ExploreCalifornia.yml)
+
+```yml
+name: Explore California
+steps:
+  - action: goto
+    params:
+      target: https://www.explorecalifornia.org/index.htm
+
+  - action: click
+    params:
+      criteria: byXpath
+      target: ".//*[@id='siteNav']/ul/li[5]"
+
+  - action: type
+    params:
+      criteria: byId
+      target: name
+      value: John Donovan
+
+  - action: selectByValue
+    params:
+      criteria: byId
+      target: state
+      value: WA
+```
+
 
 ### Process-driven scripting
 
@@ -59,6 +146,7 @@ which are parameterized with test data or combined into higher-level test defini
 
 An example of such scenario is given bellow:
 
+```gherkin
     Feature: Explore California
     
       As a web site visitor
@@ -69,5 +157,6 @@ An example of such scenario is given bellow:
         Given 'Mark Donovan' is a new customer
         When he navigates to 'Contact' page
         Then should be able to leave his contact details
+```
 
 This scenario follows a Gherkin definition style and the steps implementation is done using Cucumber tool
