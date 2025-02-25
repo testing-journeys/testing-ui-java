@@ -46,7 +46,7 @@ public class PageObject {
     }
 
     private List<Class<?>> findPageClasses(final String name) {
-        final String packageWithPages = "org.testingsol.tas.f_processdriven.adapter.pages";
+        final String packageWithPages = "org.testing.journeys.ui.f_processdriven.adapter.pages";
         return ReflectionSupport.findAllClassesInPackage(packageWithPages,
                 clazz -> clazz.isAnnotationPresent(Page.class)
                         && clazz.getAnnotation(Page.class).name().equals(name),
